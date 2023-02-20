@@ -1,42 +1,69 @@
 apply plugin: 'com.android.library'
 
 def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
 buildscript {
-  repositories {
-    jcenter()
-    google()
-  }
+    if (project == rootProject) {
+        repositories {
+            google()
+            mavenCentral()
+            jcenter()
+        }
 
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.4'
-  }
+        dependencies {
+            classpath 'com.android.tools.build:gradle:3.5.4'
+        }
+    }
 }
 
 android {
-    compileSdkVersion safeExtGet('compileSdkVersion', 28)
-    buildToolsVersion safeExtGet('buildToolsVersion', "28.0.3")
-
+    compileSdkVersion safeExtGet('RNZendesk_compileSdkVersion', 30)
+    buildToolsVersion safeExtGet('RNZendesk_buildToolsVersion', "28.0.3")
     defaultConfig {
-      minSdkVersion safeExtGet('minSdkVersion', 16)
-      targetSdkVersion safeExtGet('targetSdkVersion', 28)
-      versionCode 1
-      versionName "1.0"
+        minSdkVersion safeExtGet('RNZendesk_minSdkVersion', 21)
+        targetSdkVersion safeExtGet('RNZendesk_targetSdkVersion', 30)
+        versionCode 1
+        versionName "1.0"
+
+    }
+
+    lintOptions {
+        disable 'GradleCompatible'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 repositories {
-  mavenCentral()
-  jcenter()
-  google()
-  maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
+    mavenLocal()
+    maven {
+        // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+        url("$rootDir/../node_modules/react-native/android")
+    }
+    google()
+    mavenCentral()
+    maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
+    maven {
+        url "https://zendesk.jfrog.io/artifactory/repo"
+    }
 }
 
 dependencies {
-  implementation "com.facebook.react:react-native:+"
-
-  api group: 'com.zendesk', name: 'chat', version: safeExtGet('zendeskChatVersion', '3.3.3')
-  api group: 'com.zendesk', name: 'messaging', version: safeExtGet('zendeskMessagingVersion', '5.2.3')
+    //noinspection GradleDynamicVersion
+    implementation "com.facebook.react:react-native:+"
+    api group: 'com.zendesk', name: 'chat', version: '3.3.3'
+    api group: 'com.zendesk', name: 'answerbot', version: '2.0.0'
+    api group: 'com.zendesk', name: 'messaging', version: '5.2.3'
+    api group: 'com.zendesk', name: 'support', version: '5.0.8'
 }
